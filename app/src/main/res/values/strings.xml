@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Music Player</string>
+    <string name="share">Share</string>
+    <string name="rename">Rename</string>
+    <string name="details">Detail</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="file_exist">File is exist</string>
+    <string name="_00_00">00 : 00</string>
+    <string name="are_you_sure_want_to_delete_this_file">Are you sure want to delete this file?</string>
+    <string name="done">Done</string>
+</resources>
