@@ -2,6 +2,7 @@ package com.btl.musicplayer.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 
@@ -75,5 +76,13 @@ public class AppUtils {
 
     public static void deleteFile(Uri fileUri) {
 
+    }
+    public static boolean checkPermission(Context context, String... permissions) {
+        for (String permission : permissions) {
+            if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 }

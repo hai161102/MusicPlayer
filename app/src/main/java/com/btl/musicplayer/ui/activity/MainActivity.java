@@ -126,27 +126,62 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         detailsDialog.show();
     }
 
-    private void requestPermissionApp() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            new LoadFileMusic().execute();
+    protected boolean checkPermission() {
+        boolean isGranted = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            isGranted = isGranted
+                    && checkSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
-        else {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            }else if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            isGranted = isGranted
+                    && checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        return isGranted;
+    }
+
+    private void askPermission(){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (AppUtils.checkPermission(this, Manifest.permission.READ_MEDIA_AUDIO)){
+                new LoadFileMusic().execute();
             }
             else {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                requestPermissions(new String[]{Manifest.permission.READ_MEDIA_AUDIO}, 1);
             }
         }
+        else {
+            if (AppUtils.checkPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                new LoadFileMusic().execute();
+            }
+            else {
+                requestPermissions(new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                }, 1);
+                return;
+            }
+        }
+
+    }
+
+
+    private void requestPermissionApp() {
+        askPermission();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        requestPermissionApp();
     }
 
     @SuppressLint("MissingSuperCall")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        requestPermissionApp();
+        //requestPermissionApp();
     }
 
     @Override
